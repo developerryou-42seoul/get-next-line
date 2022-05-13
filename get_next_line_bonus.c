@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sryou <sryou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:57:36 by sryou             #+#    #+#             */
-/*   Updated: 2022/05/13 15:07:49 by sryou            ###   ########.fr       */
+/*   Updated: 2022/05/13 15:08:29 by sryou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 #include <unistd.h>
 
 char	*ft_free(char **str1, char **str2)
@@ -86,12 +86,12 @@ char	*cut_line(char **line, int newline_idx)
 
 char	*get_next_line(int fd)
 {
-	static char	*line;
+	static char	*line[OPEN_MAX];
 	char		*buffer;
 	int			newline_idx;
 	int			readn;
 
-	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE >= B_MAX)
+	if (fd < 0 || fd >= OPEN_MAX || BUFFER_SIZE <= 0 || BUFFER_SIZE >= B_MAX)
 		return (0);
 	while (1)
 	{
@@ -100,15 +100,15 @@ char	*get_next_line(int fd)
 			return (0);
 		readn = read(fd, buffer, BUFFER_SIZE);
 		if (readn < 0)
-			return (ft_free(&buffer, &line));
+			return (ft_free(&buffer, &line[fd]));
 		buffer[readn] = '\0';
-		line = ft_strjoin(line, buffer);
-		if (line == 0)
+		line[fd] = ft_strjoin(line[fd], buffer);
+		if (line[fd] == 0)
 			return (0);
-		newline_idx = find_newline_idx(line);
+		newline_idx = find_newline_idx(line[fd]);
 		if (newline_idx == -1)
-			return (ft_free(&line, 0));
-		if (readn == 0 || newline_idx != ft_strlen(line))
-			return (cut_line(&line, newline_idx));
+			return (ft_free(&line[fd], 0));
+		if (readn == 0 || newline_idx != ft_strlen(line[fd]))
+			return (cut_line(&line[fd], newline_idx));
 	}
 }
