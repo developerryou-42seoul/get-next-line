@@ -6,7 +6,7 @@
 /*   By: sryou <sryou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 18:02:05 by sryou             #+#    #+#             */
-/*   Updated: 2022/04/08 18:26:01 by sryou            ###   ########.fr       */
+/*   Updated: 2022/05/13 13:09:00 by sryou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,19 +21,7 @@ int	ft_strlen(char *str)
 	idx = 0;
 	while (str[idx])
 		idx++;
-	return (0);
-}
-
-void	ft_strstncpy(char *dest, char *src, int start, int n)
-{
-	int	idx;
-
-	idx = 0;
-	while (idx < n)
-	{
-		dest[idx] = src[start + idx];
-		idx++;
-	}
+	return (idx);
 }
 
 int	ft_strlcat(char *dst, char *src, int dstsize)
@@ -58,7 +46,6 @@ int	ft_strlcat(char *dst, char *src, int dstsize)
 		idx++;
 	}
 	*dst = '\0';
-	free(src);
 	return (dst_len + src_len);
 }
 
@@ -82,5 +69,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	mkstr[0] = '\0';
 	ft_strlcat(mkstr, s1, len1 + 1);
 	ft_strlcat(mkstr, s2, len1 + len2 + 1);
+	free(s1);
+	free(s2);
 	return (mkstr);
 }
