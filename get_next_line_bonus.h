@@ -6,7 +6,7 @@
 /*   By: sryou <sryou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 16:38:45 by sryou             #+#    #+#             */
-/*   Updated: 2022/05/13 14:05:35 by sryou            ###   ########.fr       */
+/*   Updated: 2022/05/20 11:38:46 by sryou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,9 @@
 # endif
 
 char	*get_next_line(int fd);
+char	*ft_free(char **line);
 int		ft_strlen(char *str);
-int		ft_strlcat(char *dst, char *src, int dstsize);
-char	*ft_strjoin(char *s1, char *s2);
+void	ft_strmycat(char *dst, char *src, int dstsize, int srcsize);
+int		ft_strjoin(char **line, char *buffer);
 
 #endif

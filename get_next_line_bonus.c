@@ -6,27 +6,12 @@
 /*   By: sryou <sryou@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:57:36 by sryou             #+#    #+#             */
-/*   Updated: 2022/05/13 15:08:29 by sryou            ###   ########.fr       */
+/*   Updated: 2022/05/20 11:47:44 by sryou            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 #include <unistd.h>
-
-char	*ft_free(char **str1, char **str2)
-{
-	if (str1 != 0 && *str1 != 0)
-	{
-		free(*str1);
-		*str1 = 0;
-	}
-	if (str2 != 0 && *str2 != 0)
-	{
-		free(*str2);
-		*str2 = 0;
-	}
-	return (0);
-}
 
 int	find_newline_idx(char *line)
 {
@@ -44,20 +29,20 @@ int	find_newline_idx(char *line)
 	return (idx);
 }
 
-char	*make_remainline(char *line, int remainline_idx)
+char	*make_remainline(char *line, int remainline_idx, int line_len)
 {
 	char	*remainline;
 	int		idx;
 
-	if (ft_strlen(line) <= remainline_idx)
+	if (line_len <= remainline_idx)
 		remainline = (char *)malloc(sizeof(char) * 1);
 	else
 		remainline = (char *)malloc(sizeof(char) * \
-			(ft_strlen(line) - remainline_idx + 2));
+			(line_len - remainline_idx + 2));
 	if (remainline == 0)
 		return (0);
 	idx = 0;
-	while (idx + remainline_idx <= ft_strlen(line))
+	while (idx + remainline_idx <= line_len)
 	{
 		remainline[idx] = line[idx + remainline_idx];
 		idx++;
@@ -66,7 +51,7 @@ char	*make_remainline(char *line, int remainline_idx)
 	return (remainline);
 }
 
-char	*cut_line(char **line, int newline_idx)
+char	*cut_line(char **line, int newline_idx, int line_len)
 {
 	char	*newline;
 	char	*remainline;
@@ -75,11 +60,11 @@ char	*cut_line(char **line, int newline_idx)
 	if (newline == 0)
 		return (0);
 	newline[0] = '\0';
-	ft_strlcat(newline, *line, newline_idx + 2);
-	remainline = make_remainline(*line, newline_idx + 1);
+	ft_strmycat(newline, *line, 0, newline_idx + 1);
+	remainline = make_remainline(*line, newline_idx + 1, line_len);
 	if (remainline == 0)
-		return (0);
-	free(*line);
+		return (ft_free(line));
+	ft_free(line);
 	*line = remainline;
 	return (newline);
 }
@@ -87,28 +72,26 @@ char	*cut_line(char **line, int newline_idx)
 char	*get_next_line(int fd)
 {
 	static char	*line[OPEN_MAX];
-	char		*buffer;
-	int			newline_idx;
+	char		buffer[BUFFER_SIZE + 1];
 	int			readn;
+	int			newline_idx;
+	int			line_len;
 
 	if (fd < 0 || fd >= OPEN_MAX || BUFFER_SIZE <= 0 || BUFFER_SIZE >= B_MAX)
 		return (0);
 	while (1)
 	{
-		buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-		if (buffer == 0)
-			return (0);
 		readn = read(fd, buffer, BUFFER_SIZE);
 		if (readn < 0)
-			return (ft_free(&buffer, &line[fd]));
+			return (ft_free(&line[fd]));
 		buffer[readn] = '\0';
-		line[fd] = ft_strjoin(line[fd], buffer);
-		if (line[fd] == 0)
-			return (0);
+		line_len = ft_strjoin(&line[fd], buffer);
+		if (line_len == 0)
+			return (ft_free(&line[fd]));
 		newline_idx = find_newline_idx(line[fd]);
 		if (newline_idx == -1)
-			return (ft_free(&line[fd], 0));
-		if (readn == 0 || newline_idx != ft_strlen(line[fd]))
-			return (cut_line(&line[fd], newline_idx));
+			return (ft_free(&line[fd]));
+		if (readn == 0 || newline_idx != line_len)
+			return (cut_line(&line[fd], newline_idx, line_len));
 	}
 }
